@@ -1,52 +1,75 @@
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-
-#include "stb_image.h"
-#include "stb_image_write.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-// Convertir a escala de grises
-void convertirAGris(unsigned char *img, int ancho, int alto, int canales) {
-    for (int i = 0; i < ancho * alto * canales; i += canales) {
-        int r = img[i];
-        int g = img[i + 1];
-        int b = img[i + 2];
 
-        // fórmula promedio ponderado (luminosidad)
-        unsigned char gris = (unsigned char)(0.3 * r + 0.59 * g + 0.11 * b);
+#define SIZE 8
 
-        img[i] = gris;
-        img[i + 1] = gris;
-        img[i + 2] = gris;
-    }
+
+// Función para imprimir el tablero
+void imprimirTablero(char tablero[SIZE][SIZE]) {
+printf("\n A B C D E F G H\n");
+printf(" +---+---+---+---+---+---+---+---+\n");
+for (int i = 0; i < SIZE; i++) {
+printf("%d |", 8 - i); // Números de filas (8-1 hasta 1)
+for (int j = 0; j < SIZE; j++) {
+printf(" %c |", tablero[i][j]);
+}
+printf(" %d\n", 8 - i);
+printf(" +---+---+---+---+---+---+---+---+\n");
+}
+printf(" A B C D E F G H\n\n");
 }
 
-int main(int argc, char *argv[]) {
-    if (argc < 3) {
-        printf("Uso: %s entrada.png salida.png\n", argv[0]);
-        return 1;
-    }
 
-    int ancho, alto, canales;
-    unsigned char *img = stbi_load(argv[1], &ancho, &alto, &canales, 0);
-    if (img == NULL) {
-        printf("Error al cargar la imagen %s\n", argv[1]);
-        return 1;
-    }
+// Inicializar tablero
+void inicializarTablero(char tablero[SIZE][SIZE]) {
+char piezas[SIZE][SIZE] = {
+{'r','n','b','q','k','b','n','r'},
+{'p','p','p','p','p','p','p','p'},
+{' ',' ',' ',' ',' ',' ',' ',' '},
+{' ',' ',' ',' ',' ',' ',' ',' '},
+{' ',' ',' ',' ',' ',' ',' ',' '},
+{' ',' ',' ',' ',' ',' ',' ',' '},
+{'P','P','P','P','P','P','P','P'},
+{'R','N','B','Q','K','B','N','R'}
+};
 
-    printf("Imagen cargada: %dx%d, %d canales\n", ancho, alto, canales);
 
-    convertirAGris(img, ancho, alto, canales);
+for (int i = 0; i < SIZE; i++) {
+for (int j = 0; j < SIZE; j++) {
+tablero[i][j] = piezas[i][j];
+}
+}
+}
 
-    if (!stbi_write_png(argv[2], ancho, alto, canales, img, ancho * canales)) {
-        printf("Error al guardar la imagen %s\n", argv[2]);
-        stbi_image_free(img);
-        return 1;
-    }
 
-    printf("Imagen guardada en escala de grises: %s\n", argv[2]);
+// Convertir letras (A-H) a índices
+int columnaAIndice(char c) {
+if (c >= 'A' && c <= 'H') return c - 'A';
+if (c >= 'a' && c <= 'h') return c - 'a';
+return -1;
+}
 
-    stbi_image_free(img);
-    return 0;
+
+int main() {
+char tablero[SIZE][SIZE];
+inicializarTablero(tablero);
+
+
+char origenCol, destinoCol;
+int origenFila, destinoFila;
+
+
+while (1) {
+imprimirTablero(tablero);
+
+
+printf("Mover pieza (ejemplo: E2 E4) o X para salir: ");
+char entrada[10];
+fgets(entrada, sizeof(entrada), stdin);
+
+
+if (entrada[0] == 'X' || entrada[0] == 'x') {
+printf("Saliendo del juego...\n");
+break;
 }
