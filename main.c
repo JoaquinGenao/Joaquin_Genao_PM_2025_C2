@@ -1,75 +1,75 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#define MAX 50
 
-#define SIZE 8
+typedef struct {
+    char placa[20];
+    char marca[30];
+    char modelo[30];
+    char tipoCombustible[15];
+    float kmGalonCarretera;
+    float kmGalonCiudad;
+} Vehiculo;
 
-
-// Función para imprimir el tablero
-void imprimirTablero(char tablero[SIZE][SIZE]) {
-printf("\n A B C D E F G H\n");
-printf(" +---+---+---+---+---+---+---+---+\n");
-for (int i = 0; i < SIZE; i++) {
-printf("%d |", 8 - i); // Números de filas (8-1 hasta 1)
-for (int j = 0; j < SIZE; j++) {
-printf(" %c |", tablero[i][j]);
-}
-printf(" %d\n", 8 - i);
-printf(" +---+---+---+---+---+---+---+---+\n");
-}
-printf(" A B C D E F G H\n\n");
-}
-
-
-// Inicializar tablero
-void inicializarTablero(char tablero[SIZE][SIZE]) {
-char piezas[SIZE][SIZE] = {
-{'r','n','b','q','k','b','n','r'},
-{'p','p','p','p','p','p','p','p'},
-{' ',' ',' ',' ',' ',' ',' ',' '},
-{' ',' ',' ',' ',' ',' ',' ',' '},
-{' ',' ',' ',' ',' ',' ',' ',' '},
-{' ',' ',' ',' ',' ',' ',' ',' '},
-{'P','P','P','P','P','P','P','P'},
-{'R','N','B','Q','K','B','N','R'}
-};
-
-
-for (int i = 0; i < SIZE; i++) {
-for (int j = 0; j < SIZE; j++) {
-tablero[i][j] = piezas[i][j];
-}
-}
+void guardarVehiculo(Vehiculo v) {
+    FILE *f = fopen("vehiculos.txt", "a"); // "a" = append
+    if (!f) {
+        printf("Error al abrir el archivo\n");
+        return;
+    }
+    fprintf(f, "%s %s %s %s %.2f %.2f\n",
+            v.placa, v.marca, v.modelo, v.tipoCombustible,
+            v.kmGalonCarretera, v.kmGalonCiudad);
+    fclose(f);
 }
 
+void listarVehiculos() {
+    FILE *f = fopen("vehiculos.txt", "r");
+    if (!f) {
+        printf("No hay vehículos guardados.\n");
+        return;
+    }
 
-// Convertir letras (A-H) a índices
-int columnaAIndice(char c) {
-if (c >= 'A' && c <= 'H') return c - 'A';
-if (c >= 'a' && c <= 'h') return c - 'a';
-return -1;
+    Vehiculo v;
+    while (fscanf(f, "%s %s %s %s %f %f",
+                  v.placa, v.marca, v.modelo, v.tipoCombustible,
+                  &v.kmGalonCarretera, &v.kmGalonCiudad) == 6) {
+        printf("Placa: %s | Marca: %s | Modelo: %s | Combustible: %s | Carretera: %.2f km/gal | Ciudad: %.2f km/gal\n",
+               v.placa, v.marca, v.modelo, v.tipoCombustible,
+               v.kmGalonCarretera, v.kmGalonCiudad);
+    }
+    fclose(f);
 }
-
 
 int main() {
-char tablero[SIZE][SIZE];
-inicializarTablero(tablero);
+    int opcion;
+    do {
+        printf("\n--- GESTIÓN DE VEHÍCULOS ---\n");
+        printf("1. Agregar vehículo\n");
+        printf("2. Listar vehículos\n");
+        printf("3. Salir\n");
+        printf("Seleccione: ");
+        scanf("%d", &opcion);
 
+        if (opcion == 1) {
+            Vehiculo v;
+            printf("Placa: "); scanf("%s", v.placa);
+            printf("Marca: "); scanf("%s", v.marca);
+            printf("Modelo: "); scanf("%s", v.modelo);
+            printf("Tipo Combustible: "); scanf("%s", v.tipoCombustible);
+            printf("Km x galon carretera: "); scanf("%f", &v.kmGalonCarretera);
+            printf("Km x galon ciudad: "); scanf("%f", &v.kmGalonCiudad);
 
-char origenCol, destinoCol;
-int origenFila, destinoFila;
+            guardarVehiculo(v);
+            printf("Vehículo guardado!\n");
+        }
+        else if (opcion == 2) {
+            listarVehiculos();
+        }
+    } while (opcion != 3);
 
-
-while (1) {
-imprimirTablero(tablero);
-
-
-printf("Mover pieza (ejemplo: E2 E4) o X para salir: ");
-char entrada[10];
-fgets(entrada, sizeof(entrada), stdin);
-
-
-if (entrada[0] == 'X' || entrada[0] == 'x') {
-printf("Saliendo del juego...\n");
-break;
+    return 0;
 }
+
