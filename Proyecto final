@@ -28,7 +28,7 @@ void guardarVehiculo(Vehiculo v) {
 void listarVehiculos() {
     FILE *f = fopen("vehiculos.txt", "r");
     if (!f) {
-        printf("No hay vehÌculos guardados.\n");
+        printf("No hay veh√≠culos guardados.\n");
         return;
     }
 
@@ -46,9 +46,9 @@ void listarVehiculos() {
 int main() {
     int opcion;
     do {
-        printf("\n--- GESTI”N DE VEHÕCULOS ---\n");
-        printf("1. Agregar vehÌculo\n");
-        printf("2. Listar vehÌculos\n");
+        printf("\n--- GESTI√ìN DE VEH√çCULOS ---\n");
+        printf("1. Agregar veh√≠culo\n");
+        printf("2. Listar veh√≠culos\n");
         printf("3. Salir\n");
         printf("Seleccione: ");
         scanf("%d", &opcion);
@@ -63,7 +63,7 @@ int main() {
             printf("Km x galon ciudad: "); scanf("%f", &v.kmGalonCiudad);
 
             guardarVehiculo(v);
-            printf("VehÌculo guardado!\n");
+            printf("Veh√≠culo guardado!\n");
         }
         else if (opcion == 2) {
             listarVehiculos();
